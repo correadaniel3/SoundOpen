@@ -1,0 +1,132 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/fragment_container"
+    tools:context=".AddSoundAppFragment">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/scrollView" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/editTextSName"
+                    android:inputType="text"
+                    android:hint="Nombre del audio"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="10dp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+
+
+
+
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aplicacion"
+                android:id="@+id/buttonDate"
+                android:onClick="AppClic"
+                android:textColor="#fcfafa"
+                android:textStyle="bold"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                style="@style/Base.Widget.AppCompat.Button.Colored"
+                android:layout_marginTop="20dp" />
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="43dp">
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/aplicacion"
+                    android:hint="Aplicacion"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="20dp" />
+            </android.support.design.widget.TextInputLayout>
+            <ImageView
+                android:layout_width="111dp"
+                android:layout_height="80dp"
+                android:id="@+id/appIcon"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp">
+
+
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/stopButton"
+                    android:onClick="StopClic"
+                    android:src="@android:drawable/ic_media_pause"
+                    android:background="@drawable/round_button"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:layout_marginEnd="60dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true" />
+
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/playButton"
+                    android:onClick="playClic"
+                    android:src="@android:drawable/ic_media_play"
+                    android:layout_marginLeft="40dp"
+                    android:background="@drawable/round_button"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true" />
+
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/recordButton"
+                    android:onClick="recordClic"
+                    android:src="@android:drawable/ic_btn_speak_now"
+                    android:layout_marginLeft="40dp"
+                    android:background="@drawable/round_button"
+                    android:layout_alignParentTop="true"
+                    android:layout_toStartOf="@+id/playButton"
+                    android:layout_marginEnd="22dp" />
+
+
+            </RelativeLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Añadir"
+                android:id="@+id/buttonSound"
+                android:onClick="SaveSound"
+                android:textColor="#fcfafa"
+                android:textStyle="bold"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                style="@style/Base.Widget.AppCompat.Button.Colored"
+                android:layout_marginTop="20dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>
