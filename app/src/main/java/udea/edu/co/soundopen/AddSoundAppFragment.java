@@ -53,6 +53,7 @@ public class AddSoundAppFragment extends Fragment {
     SQLiteDatabase db;
     Uri contact = null;
     Button btnR;
+    Button appl;
     private static final int REQUEST_CODE_APP=1;
     EditText[] txtValidateR = new EditText[4];
     View view;
@@ -71,18 +72,11 @@ public class AddSoundAppFragment extends Fragment {
         play=(ImageButton)view.findViewById(R.id.playButton);
         stop=(ImageButton)view.findViewById(R.id.stopButton);
         record=(ImageButton)view.findViewById(R.id.recordButton);
+        appl=(Button)view.findViewById(R.id.buttonApp);
 
         stop.setEnabled(false);
         play.setEnabled(false);
-        //outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+ txtValidateR[0]+".wav";
 
-        outputFile ="android.resource://udea.edu.co.soundopen/raw/"+ txtValidateR[0]+".wav";
-
-        myAudioRecorder=new MediaRecorder();
-        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        myAudioRecorder.setOutputFile(outputFile);
 
         TextWatcher btnActivation = new TextWatcher() {
             @Override
@@ -99,10 +93,97 @@ public class AddSoundAppFragment extends Fragment {
                 else{btnR.setEnabled(false);}
             }
         };
-        for (int n = 0; n < txtValidateR.length; n++)
+
+        appl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                manager = getFragmentManager().beginTransaction();
+                listApps =  new ListAppsFragment();
+                manager.replace(R.id.content_main,listApps);
+                manager.commit();
+            }
+        });
+
+        record.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+txtValidateR[0].getText()+".wav";
+
+                //outputFile ="res/raw/uno.wav";
+
+                myAudioRecorder=new MediaRecorder();
+                myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+                myAudioRecorder.setOutputFile(outputFile);
+                try {
+                    myAudioRecorder.prepare();
+                    myAudioRecorder.start();
+                }
+
+                catch (IllegalStateException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                record.setEnabled(false);
+                stop.setEnabled(true);
+                Toast.makeText(getActivity(),"Recording started", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    myAudioRecorder.stop();
+                }catch (IllegalStateException e){
+                    e.printStackTrace();
+                }
+                myAudioRecorder.release();
+                myAudioRecorder  = null;
+
+                stop.setEnabled(false);
+                play.setEnabled(true);
+
+                Toast.makeText(getActivity(), "Audio recorded successfully",Toast.LENGTH_LONG).show();
+            }
+        });
+
+        play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MediaPlayer m = new MediaPlayer();
+
+                try {
+                    m.setDataSource(outputFile);
+                }
+
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    m.prepare();
+                }
+
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                m.start();
+                Toast.makeText(getActivity(), "Playing audio", Toast.LENGTH_LONG).show();
+            }
+        });
+/*        for (int n = 0; n < txtValidateR.length; n++)
         {
             txtValidateR[n].addTextChangedListener(btnActivation);
-        }
+        }*/
         return view;
     }
 
@@ -141,72 +222,11 @@ public class AddSoundAppFragment extends Fragment {
         ContentValues values = new ContentValues();
         Cursor search = db.rawQuery("select count(*) from " + StatusContract.TABLE_USER, null);
         search.moveToFirst();
-        values.put(StatusContract.Column_soundApps.sound,txtValidateR[0].getText().toString()); //cambiar por la URI del sonido
+        values.put(StatusContract.Column_soundApps.sound,Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+txtValidateR[0].getText()+".wav"); //cambiar por la URI del sonido
         values.put(StatusContract.Column_soundApps.app,txtValidateR[1].getText().toString()); //Cambiar por la actividad de la aplicacion
         values.put(StatusContract.Column_soundApps.icon,getBitmapAsByteArray(icon));
         db.insertWithOnConflict(StatusContract.TABLE_USER, null, values, SQLiteDatabase.CONFLICT_IGNORE);
         db.close();
-    }
-
-    public void recordClic() {
-        try {
-            myAudioRecorder.prepare();
-            myAudioRecorder.start();
-        }
-
-        catch (IllegalStateException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        record.setEnabled(false);
-        stop.setEnabled(true);
-
-
-        //Toast.makeText(getContext(),"Recording started", Toast.LENGTH_LONG).show();
-    }
-    public void stopClic() {
-        myAudioRecorder.stop();
-        myAudioRecorder.release();
-        myAudioRecorder  = null;
-
-        stop.setEnabled(false);
-        play.setEnabled(true);
-
-       // Toast.makeText(getContext(), "Audio recorded successfully",Toast.LENGTH_LONG).show();
-    }
-
-    public void playClic()throws IllegalArgumentException,SecurityException,IllegalStateException{
-        MediaPlayer m = new MediaPlayer();
-
-        try {
-            m.setDataSource(outputFile);
-        }
-
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            m.prepare();
-        }
-
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        m.start();
-       // Toast.makeText(getContext(), "Playing audio", Toast.LENGTH_LONG).show();
-    }
-    public void AppClic(){
-        manager = getFragmentManager().beginTransaction();
-        listApps =  new ListAppsFragment();
-        manager.replace(R.id.fragment_container,listApps);
     }
 
 }

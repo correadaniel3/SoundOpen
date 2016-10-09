@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
                 manager = getFragmentManager().beginTransaction();
                 add = new AddSoundAppFragment();
                 manager.replace(R.id.content_main,add);
+                manager.commit();
             }
         });
     }
