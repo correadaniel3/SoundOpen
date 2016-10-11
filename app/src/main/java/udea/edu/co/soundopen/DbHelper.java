@@ -18,7 +18,7 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String sqlUser = String
-                .format("create table %s (%s int primary key autoincrement, %s text, %s text, %s text unique, %s blob)",
+                .format("create table %s (%s int primary key autoincrement, %s text, %s text unique, %s blob)",
                         StatusContract.TABLE_USER,
                         StatusContract.Column_soundApps.ID,
                         StatusContract.Column_soundApps.sound,

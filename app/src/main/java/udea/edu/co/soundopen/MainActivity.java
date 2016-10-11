@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
                 add = new AddSoundAppFragment();
                 manager.replace(R.id.content_main,add);
                 manager.commit();
+
             }
         });
     }
@@ -66,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+
         return super.onOptionsItemSelected(item);
     }
+
 }

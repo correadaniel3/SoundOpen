@@ -7,6 +7,10 @@ import android.app.ListFragment;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -23,18 +27,27 @@ import android.support.v4.app.FragmentActivity;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by corre on 9/10/2016.
@@ -47,7 +60,8 @@ public class AddSoundAppFragment extends Fragment {
     private String outputFile = null;
     Bitmap icon;
     FragmentTransaction manager;
-    Fragment listApps;
+    Fragment listaApps;
+    Spinner spin;
     private ImageView targetImageR;
     DbHelper dbH;
     SQLiteDatabase db;
@@ -57,6 +71,13 @@ public class AddSoundAppFragment extends Fragment {
     private static final int REQUEST_CODE_APP=1;
     EditText[] txtValidateR = new EditText[4];
     View view;
+    TextView aplicacion;
+    List<ApplicationInfo> apps;
+    ApplicationInfo target;
+    ApplicationInfo[] info;
+    String[]name;
+    Intent startIntent;
+
 
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,14 +89,81 @@ public class AddSoundAppFragment extends Fragment {
         targetImageR.setImageBitmap(icon);
         txtValidateR[0]=(EditText)view.findViewById(R.id.editTextSName);
         btnR = (Button)view.findViewById(R.id.buttonSound);
-        btnR.setEnabled(false);
+        btnR.setEnabled(true);
+        spin=(Spinner)view.findViewById(R.id.spinner);
         play=(ImageButton)view.findViewById(R.id.playButton);
         stop=(ImageButton)view.findViewById(R.id.stopButton);
         record=(ImageButton)view.findViewById(R.id.recordButton);
-        appl=(Button)view.findViewById(R.id.buttonApp);
-
+        //appl=(Button)view.findViewById(R.id.buttonApp);
         stop.setEnabled(false);
         play.setEnabled(false);
+        aplicacion=(TextView)view.findViewById(R.id.aplicacion);
+
+
+        //---------------------------------------------spinner---------------------------------
+
+        final PackageManager pm = this.getActivity().getPackageManager();
+        apps = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+        //String[] apps={"uno","dos"};
+
+        info=new ApplicationInfo[apps.size()];
+        name=new String[apps.size()];
+        for(int i=0;i<apps.size();i++){
+            info[i]=apps.get(i);
+        }
+        for(int i=0;i<apps.size();i++){
+            name[i]=apps.get(i).loadLabel(pm).toString();
+        }
+        /*System.out.println(name[0]+" "+info[0]);
+        ArrayList<String> apps2=new ArrayList<>();
+        for(ApplicationInfo apli:apps){
+            apps2.add(apli.loadLabel(pm).toString());
+        }
+        Collections.sort(apps2.subList(1, apps2.size()));*/
+
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                getActivity(),           //contexto
+                R.layout.items,   //layout a usar
+                name             //items
+        );
+
+        spin.setAdapter(adapter);
+
+        spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String a=(String) spin.getSelectedItem();
+                int posi=0;
+                for(int i=0;i<name.length;i++){
+                    if(name[i].equals(a)){
+                        posi=i;
+                    }
+                }
+                target=info[posi];
+                aplicacion.setText(a);
+                String packageName = target.packageName;
+                startIntent = pm.getLaunchIntentForPackage(packageName);
+                /*if(startIntent != null){
+                    startActivity(startIntent);
+                }*/
+                targetImageR.setImageDrawable(target.loadIcon(pm));
+                if(startIntent != null){
+                    Toast.makeText(getActivity(),startIntent.toString(), Toast.LENGTH_LONG).show();
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
+
+
+
+
+        //---------------------------------------------fin spinner-----------------------------
 
 
         TextWatcher btnActivation = new TextWatcher() {
@@ -94,13 +182,24 @@ public class AddSoundAppFragment extends Fragment {
             }
         };
 
-        appl.setOnClickListener(new View.OnClickListener() {
+        /*appl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                manager = getFragmentManager().beginTransaction();
-                listApps =  new ListAppsFragment();
-                manager.replace(R.id.content_main,listApps);
-                manager.commit();
+
+                //Toast.makeText(getActivity(),"App Seleccionada "+String.valueOf(spin.getSelectedItem()), Toast.LENGTH_LONG).show();
+                String a=(String) spin.getSelectedItem();
+                aplicacion.setText(a);
+
+
+            }
+        });*/
+
+        btnR.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
+                //Toast.makeText(getActivity(),"App Seleccionada "+String.valueOf(spin.getSelectedItem()), Toast.LENGTH_LONG).show();
+                //ValidarRace();
             }
         });
 
@@ -223,10 +322,11 @@ public class AddSoundAppFragment extends Fragment {
         Cursor search = db.rawQuery("select count(*) from " + StatusContract.TABLE_USER, null);
         search.moveToFirst();
         values.put(StatusContract.Column_soundApps.sound,Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+txtValidateR[0].getText()+".wav"); //cambiar por la URI del sonido
-        values.put(StatusContract.Column_soundApps.app,txtValidateR[1].getText().toString()); //Cambiar por la actividad de la aplicacion
+        values.put(StatusContract.Column_soundApps.app,startIntent.toString()); //Cambiar por la actividad de la aplicacion
         values.put(StatusContract.Column_soundApps.icon,getBitmapAsByteArray(icon));
         db.insertWithOnConflict(StatusContract.TABLE_USER, null, values, SQLiteDatabase.CONFLICT_IGNORE);
         db.close();
     }
+
 
 }

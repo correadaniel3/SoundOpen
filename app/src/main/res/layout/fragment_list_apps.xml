@@ -10,6 +10,6 @@
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:id="@+id/listApps" />
+        android:id="@+id/list" />
 
 </FrameLayout>

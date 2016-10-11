@@ -40,9 +40,9 @@ public class ListAppsFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view=inflater.inflate(R.layout.fragment_add_sound,container,false);
-        listaApps= (ListView)view.findViewById(R.id.listApps);
-        System.out.println("view "+listaApps);
+        view=inflater.inflate(R.layout.fragment_list_apps,container,false);
+        listaApps= (ListView)view.findViewById(R.id.list);
+        System.out.println("view "+listaApps.getClass());
         appsListView();
         return inflater.inflate(R.layout.fragment_list_apps, container, false);
 
